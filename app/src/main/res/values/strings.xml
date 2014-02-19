@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Lab</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="firstname_label">Firstname: </string>
+    <string name="lastname_label">Lastname: </string>
+    <string name="email_label">Email: </string>
+
+</resources>

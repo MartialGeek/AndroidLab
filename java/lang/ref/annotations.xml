@@ -1,0 +1,7 @@
+<root>
+    <item name='java.lang.ref.Reference T get()'>
+        <annotation name='org.jetbrains.annotations.Contract'>
+            <val val="&quot;,-&gt; !null&quot;" />
+        </annotation>
+    </item>
+</root>
