@@ -1,8 +1,6 @@
 package fr.martialgeek.app;
 
 import android.annotation.TargetApi;
-import android.net.http.AndroidHttpClient;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
@@ -14,14 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
+
+import fr.martialgeek.app.transport.MartialGeekHttpClient;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -72,7 +68,7 @@ public class MainActivity extends ActionBarActivity {
             setRetainInstance(true);
             ContactTask contactTask = new ContactTask(this);
             mContactTask = new WeakReference<ContactTask>(contactTask);
-            getContact();
+            mContactTask.get().execute();
         }
 
         @Override
@@ -96,73 +92,19 @@ public class MainActivity extends ActionBarActivity {
                 e.printStackTrace();
             }
         }
-
-        private ContactTask getContactTask() throws MainActivityException {
-            if (mContactTask.get() == null) {
-                throw new MainActivityException();
-            }
-
-            return mContactTask.get();
-        }
-
-        private void getContact() {
-            ContactTask contactTask;
-
-            try {
-                contactTask = getContactTask();
-                contactTask.execute();
-            } catch (MainActivityException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
-    private static class ContactTask extends AsyncTask<Void, Void, String> {
-        private WeakReference<PlaceholderFragment> mPlaceholderFragment;
-        private AndroidHttpClient mHttpClient;
-
-        private ContactTask(PlaceholderFragment fragment) {
-            mPlaceholderFragment = new WeakReference<PlaceholderFragment>(fragment);
-        }
-
-        @TargetApi(Build.VERSION_CODES.FROYO)
-        @Override
-        protected void onPreExecute() {
-            mHttpClient = AndroidHttpClient.newInstance("Mozilla 5.0");
-        }
-
-        @TargetApi(Build.VERSION_CODES.FROYO)
-        @Override
-        protected String doInBackground(Void... params) {
-            try {
-                HttpResponse httpResponse = mHttpClient.execute(new HttpGet("http://lab.martialgeek.fr/contact.php"));
-
-                return EntityUtils.toString(httpResponse.getEntity());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return null;
+    private static class ContactTask extends MartialGeekHttpClient {
+        public ContactTask(PlaceholderFragment fragment) {
+            super(fragment, "http://lab.martialgeek.fr/contact.php");
         }
 
         @TargetApi(Build.VERSION_CODES.FROYO)
         @Override
         protected void onPostExecute(String response) {
-            PlaceholderFragment placeholderFragment = getPlaceholderFragment();
+            PlaceholderFragment placeholderFragment = (PlaceholderFragment) getPlaceholderFragment();
             placeholderFragment.renderFields(response);
             mHttpClient.close();
         }
-
-        private PlaceholderFragment getPlaceholderFragment() {
-            if (mPlaceholderFragment.get() != null) {
-                return mPlaceholderFragment.get();
-            }
-
-            return null;
-        }
-    }
-
-    public class MainActivityException extends Exception {
-
     }
 }
