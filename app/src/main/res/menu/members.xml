@@ -1,10 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="fr.martialgeek.app.MainActivity" >
+    tools:context="fr.martialgeek.app.MembersActivity" >
 
-    <item android:id="@+id/action_members"
-        android:title="@string/action_members"
+    <item android:id="@+id/action_main"
+        android:title="@string/action_main"
         android:orderInCategory="10"
         app:showAsAction="never" />
 
