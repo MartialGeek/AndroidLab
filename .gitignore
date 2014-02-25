@@ -1,4 +1,10 @@
 .gradle
 /local.properties
-/.idea/workspace.xml
+.idea/
 .DS_Store
+*.apk
+*.ap_
+*.dex
+*.class
+bin/
+gen/
