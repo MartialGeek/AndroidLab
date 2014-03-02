@@ -11,10 +11,11 @@
     <string name="email_label">Email: </string>
     <string name="title_activity_members">MembersActivity</string>
     <string-array name="menu_labels">
-        <item>Home</item>
-        <item>Find friends</item>
-        <item>Upload photos</item>
-        <item>About</item>
+        <item>Profile</item>
+        <item>Members</item>
     </string-array>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="action_websearch">Web search</string>
 
 </resources>

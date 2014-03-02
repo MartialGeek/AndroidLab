@@ -1,5 +1,6 @@
 package fr.martialgeek.app;
 
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -13,22 +14,48 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 public class MainActivity extends FragmentActivity {
-    private String[] mMenuLabels;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private CharSequence mDrawerTitle;
+    private CharSequence mTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mMenuLabels = getResources().getStringArray(R.array.menu_labels);
+        mTitle = mDrawerTitle = getTitle();
+        String[] menuLabels = getResources().getStringArray(R.array.menu_labels);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, mMenuLabels));
+                R.layout.drawer_list_item, menuLabels));
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
+
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,
+                mDrawerLayout,
+                R.drawable.ic_drawer,
+                R.string.drawer_open,
+                R.string.drawer_close
+        ) {
+            public void onDrawerClosed(View view) {
+                getActionBar().setTitle(mTitle);
+                invalidateOptionsMenu();
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                getActionBar().setTitle(mDrawerTitle);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         if (savedInstanceState == null) {
             try {
@@ -42,20 +69,28 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // If the nav drawer is open, hide action items related to the content view
+        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+        menu.findItem(R.id.action_websearch).setVisible(!drawerOpen);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
         int id = item.getItemId();
 
-        return id == R.id.action_settings || super.onOptionsItemSelected(item);
+        return id == R.id.action_websearch || super.onOptionsItemSelected(item);
     }
 
     /**
@@ -79,6 +114,14 @@ public class MainActivity extends FragmentActivity {
         }
 
         fragmentManager.beginTransaction().replace(R.id.container, fragment).commit();
+        mDrawerList.setItemChecked(position, true);
+        mDrawerLayout.closeDrawer(mDrawerList);
+    }
+
+    @Override
+    public void setTitle(CharSequence title) {
+        mTitle = title;
+        getActionBar().setTitle(mTitle);
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
