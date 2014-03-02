@@ -1,14 +1,18 @@
 package fr.martialgeek.app;
 
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends FragmentActivity {
     private String[] mMenuLabels;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
@@ -24,11 +28,14 @@ public class MainActivity extends ActionBarActivity {
 
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,
                 R.layout.drawer_list_item, mMenuLabels));
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new ProfileFragment())
-                    .commit();
+            try {
+                selectItem(0);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -49,5 +56,40 @@ public class MainActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         return id == R.id.action_settings || super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Update the main content by replacing fragments.
+     * @throws Exception
+     * @param position The menu position
+     */
+    private void selectItem(int position) throws Exception {
+        Fragment fragment;
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        switch (position) {
+            case 0:
+                fragment = new ProfileFragment();
+                break;
+            case 1:
+                fragment = new MembersFragment();
+                break;
+            default:
+                throw new Exception("Invalid position");
+        }
+
+        fragmentManager.beginTransaction().replace(R.id.container, fragment).commit();
+    }
+
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            try {
+                selectItem(position);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
